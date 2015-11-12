@@ -3,7 +3,9 @@ package linearML;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 public class TestClassifier {
 
@@ -26,7 +28,10 @@ public class TestClassifier {
 		LinearRegressionClassifier classifier = new LinearRegressionClassifier(testImages[0].length, new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"});
 		classifier.train(trainImages, trainLabels);
 		
-		//TODO save trained classifier in file
+		//Save trained classifier in file
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(new File("classifier.obj")));
+		out.writeObject(classifier);
+		out.close();
 		
 		System.out.println("Trained KNN Classifier " + ((System.currentTimeMillis()-startTime)/1000d));
 		
