@@ -23,7 +23,7 @@ public class TestClassifier {
 		
 		//We now have a training dataset
 		
-		LinearClassifier classifier = new LinearClassifier(testImages[0].length, new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"});
+		LinearRegressionClassifier classifier = new LinearRegressionClassifier(testImages[0].length, new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"});
 		classifier.train(trainImages, trainLabels);
 		
 		//TODO save trained classifier in file
@@ -57,7 +57,7 @@ public class TestClassifier {
 		
 		for(int i = 0; i < n; i++) {
 			for(int j = 0; j < row*col; j++) {
-				images[i][j] = input.readUnsignedByte();
+				images[i][j] = 255 - input.readUnsignedByte(); //INVERTED the pixel in order to prevent singular matrices to occur
 			}
 		}
 		
