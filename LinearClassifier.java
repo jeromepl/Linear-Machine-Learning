@@ -45,7 +45,7 @@ public class LinearClassifier implements Serializable {
 	//RHS matrix which, combined with the above matrix creates our linear system of equations
 	double[][] solveM = new double [dimension][1];
 
-	//fill this up
+	//This array contains the eventual matrix of coefficients (functions) which will be used to classify
 	double[][] solution = new double[classes.length][dimensions];
 
 	//We create a matrix of coefficients for each of our classes. 
@@ -91,8 +91,6 @@ public class LinearClassifier implements Serializable {
 		solution[cl] = (new Matrix(tempMatrix).solve(new Matrix(solveM))).getArray()[0];	
 		
 		}
-
-	
 
 	theta = new Matrix(solution);
 
