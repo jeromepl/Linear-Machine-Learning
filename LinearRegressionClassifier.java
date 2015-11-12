@@ -42,46 +42,37 @@ public class LinearRegressionClassifier implements Serializable {
 		//Musts: data.length == labels.length. All data[i] == dimension. All labels must appear at least once.
 		//labels means classes
 		
-		//Preliminary sums:
-		double[] pixelSums = new double[dimension];
-		double[] labelSums = new double[classes.length];
-		
 		//Matrices used for calculations (equation of the form Ax = B, where A,B are matrices. the X is the matrix containing the thetas in this case)
 		Matrix A = new Matrix(dimension, dimension); //Contains all the coefficients of the thetas after calculating the gradients
 		Matrix B = new Matrix(dimension, 1); //Contains all constants (constants only occur when on label in the training set corresponds with the class for which the thetas are being calculated)
-		
-		//Compute all pixel sums first (the sum of all the pixels in the same position in all images)
-		for(int i = 0; i < dimension; i++) {
-			double temp = 0;
-			for(int j = 0; j < data.length; j++) {
-				temp += data[j][i];
-			}
-			pixelSums[i] = temp;
-		}
-		
-		//Then the sum of the label values. (Note: if one of the labels never appears, the whole system collapses as one of the matrix equations will be homogeneous and the solution will be the trivial one)
-		for(int i = 0; i < classes.length; i++) {
-			double temp = 0;
-			for(int j = 0; j < labels.length; j++) {
-				if(classes[i].equals(labels[j])) {
-					temp += 1;
-				}
-			}
-			labelSums[i] = temp;
-		}
 		
 		//Here's the fun part! Calculating the gradients and finding the thetas for all classes!
 		for(int i = 0; i < classes.length; i++) {
 			for(int j = 0; j < dimension; j++) { //j represents the current row in the matrix
 				for(int k = 0; k < dimension; k++) { //k represents the current column in the matrix
-					if(j == k) {
-						A.set(j, k, 2 * pixelSums[j]);
+					
+					double tempA = 0;
+					double tempB = 0;
+					
+					for(int l = 0; l < data.length; l++) {
+						if(j == k)
+							tempA += data[l][j];
+						else
+							tempA += data[l][j] * data[l][k];
+						
+						if(k == 0) //Only need to calculate labels once per row
+							tempB += data[l][j];
 					}
-					else
-						A.set(j, k, 2 * pixelSums[j] * pixelSums[k]);
+					
+					tempA  *= 2;
+					A.set(j, k, tempA);
+					System.out.println("Class: " + i + ". Position: " + j + ", " + k + ". Value: " + tempA);
+					
+					if(k == 0) { //Again, only calculate labels once per row (one constant per equation)
+						tempB *= 2;
+						B.set(j, 0, tempB);
+					}
 				}
-				
-				B.set(j, 0, 2 * labelSums[i] * pixelSums[j]);
 			}
 			
 			//System.out.println(Arrays.deepToString(A.getArray()));
