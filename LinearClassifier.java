@@ -40,16 +40,15 @@ public class LinearClassifier implements Serializable {
 	
 	public void train(double[][] data, String[] labels) {
 
-	Matrix matrixToSolve = new Matrix(dimension, dimension);
-
-	//LHS matrix, nxn used 10 times
+	//LHS matrix, nxn. Filled up for every class matrix. 
 	double[][] tempMatrix = new double[dimension][dimension];
-	//RHS matrix
+	//RHS matrix which, combined with the above matrix creates our linear system of equations
 	double[][] solveM = new double [dimension][1];
 
 	//fill this up
 	double[][] solution = new double[classes.length][dimensions];
 
+	//We create a matrix of coefficients for each of our classes. 
 	for(int cl=0; cl<classes.length;cl++){
 		int sum =0; //used for both summing coefficients and summing constants
 		
