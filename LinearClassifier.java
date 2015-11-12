@@ -52,6 +52,8 @@ public class LinearClassifier implements Serializable {
 
 		// We create a matrix of coefficients for each of our classes.
 		for (int cl = 0; cl < classes.length; cl++) {
+			
+			System.out.println("Creating classifier for class:" + classes[cl]);
 			double sumT = 0; // used for  summing coefficients 
 			double sumC =0; //used for summing constants
 
@@ -76,14 +78,15 @@ public class LinearClassifier implements Serializable {
 							sumC += 2*data[d][r];
 						}
 					
-					solution[c][r]=sumT;
+					tempMatrix[c][r]=sumT;
 				}
 				solveM[r][0] = sumC;
 			}
-			
+			System.out.println("Done compiling matrix for class" + classes[cl] + " now attempting to solve.");
 			// Super ugly way to create a matrix for both the RHS and LHS, solve
 			// it, then extra the resulting nx1 matrix and put it in the
 			// solution
+			
 			solution[cl] = (new Matrix(tempMatrix).solve(new Matrix(solveM)))
 					.getArray()[0];
 		}
