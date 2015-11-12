@@ -52,50 +52,46 @@ public class LinearClassifier implements Serializable {
 
 		// We create a matrix of coefficients for each of our classes.
 		for (int cl = 0; cl < classes.length; cl++) {
-			int sum = 0; // used for both summing coefficients and summing
-							// constants
+			double sumT = 0; // used for  summing coefficients 
+			double sumC =0; //used for summing constants
 
-			// Compute the coefficients in each index, going by column.
+			// Compute the coefficients in each index, 
 			// Add reasoning later
-			// column
-			for (int a = 0; a < dimension; a++) {
-				// rows
-				for (int i = 0; i < dimension; i++) {
-					sum = 0;
-					// bytes
-					for (int j = 0; j < dimension; j++) {
-						// Diagonal of the matrix, square of the entry
-						if (i == a)
-							sum += 2 * (data[j][a] * data[j][a]);
-						else
-							sum += data[j][a];
-					}
-					tempMatrix[a][i] = sum;
-				}
-			}
 
-			// Compute constants
-			for (int r = 0; r < dimension; r++) {
-				sum = 0;
-				for (double x : data[r]) {
-					if (labels[r].equals(classes[cl]))
-						sum += x;
+			for(int r =0;r<dimension;r++)
+			{
+				sumC =0;
+				for(int c=0; c<dimension; c++)
+				{
+					sumT =0;
+					for(int d=0;d<data.length;d++)
+					{
+						//Every column, within a row represents the coefficient of a single unknown. Since Differentiate this: sum((t_1x_1 +t_2x_2+...)^2) becomes
+						// sum(2*x_i(t_1x_1 +t_2_x2)) where x_i is the coefficcient of the variable we differentiate (this is the row).  
+						sumT =+ 2*data[d][c]*data[d][r];
+						//RHS of the linear solution we are building. If the lavel of the current vector matches, then it has a 100% probability
+						// of being this current class. Since we derived the function, every "1" will be multiplied by 2 (least square method) and the coefficient
+						// of the variable being differentiated
+						if (labels[d].equals(classes[cl]))
+							sumC += 2*data[d][r];
+						}
+					
+					solution[c][r]=sumT;
 				}
-				// Fill up the RHS matrix
-				solveM[r][0] = sum;
+				solveM[r][0] = sumC;
 			}
-
+			
 			// Super ugly way to create a matrix for both the RHS and LHS, solve
 			// it, then extra the resulting nx1 matrix and put it in the
 			// solution
 			solution[cl] = (new Matrix(tempMatrix).solve(new Matrix(solveM)))
 					.getArray()[0];
-
 		}
+		
 
 		theta = new Matrix(solution);
-
-	}
+		}
+	
 
 	public Map<String, Double> classDistribution(double[] data) {
 		Map<String, Double> distribution = new HashMap<String, Double>();
