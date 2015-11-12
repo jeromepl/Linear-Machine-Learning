@@ -52,8 +52,8 @@ public class LinearClassifier implements Serializable {
 
 		// We create a matrix of coefficients for each of our classes.
 		for (int cl = 0; cl < classes.length; cl++) {
-			int sumT = 0; // used for  summing coefficients 
-			int sumC =0; //used for summing constants
+			double sumT = 0; // used for  summing coefficients 
+			double sumC =0; //used for summing constants
 
 			// Compute the coefficients in each index, 
 			// Add reasoning later
@@ -73,8 +73,9 @@ public class LinearClassifier implements Serializable {
 						// of being this current class. Since we derived the function, every "1" will be multiplied by 2 (least square method) and the coefficient
 						// of the variable being differentiated
 						if (labels[d].equals(classes[cl]))
-							sumC += 2*data[d][r];}
-					}
+							sumC += 2*data[d][r];
+						}
+					
 					solution[c][r]=sumT;
 				}
 				solveM[r][0] = sumC;
@@ -85,12 +86,12 @@ public class LinearClassifier implements Serializable {
 			// solution
 			solution[cl] = (new Matrix(tempMatrix).solve(new Matrix(solveM)))
 					.getArray()[0];
-
 		}
+		
 
 		theta = new Matrix(solution);
-
-	}
+		}
+	
 
 	public Map<String, Double> classDistribution(double[] data) {
 		Map<String, Double> distribution = new HashMap<String, Double>();
