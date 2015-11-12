@@ -45,7 +45,7 @@ public class TestClassifier {
 		
 		System.out.println("Done! " + ((System.currentTimeMillis()-startTime)/1000d));
 		System.out.println(good + " good and " + bad + " bad.");
-		System.out.println("Accuracy: " + ((double)good/(good + bad)) + ", Error: " + ((double)bad/(good + bad)));
+		System.out.println("Accuracy: " + ((double)good/(good + bad) * 100) + ", Error: " + ((double)bad/(good + bad) * 100));
 		System.out.println("Completed in " + ((System.currentTimeMillis() - startTime)/1000d) + "seconds");
 	}
 	
@@ -62,7 +62,7 @@ public class TestClassifier {
 		
 		for(int i = 0; i < n; i++) {
 			for(int j = 0; j < row*col; j++) {
-				images[i][j] = 255 - input.readUnsignedByte(); //INVERTED the pixel in order to prevent singular matrices to occur
+				images[i][j] = (255 - input.readUnsignedByte())/255d; //INVERTED the pixel in order to prevent singular matrices to occur
 			}
 		}
 		

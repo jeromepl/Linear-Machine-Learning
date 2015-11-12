@@ -1,6 +1,9 @@
 package linearML;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +41,7 @@ public class LinearRegressionClassifier implements Serializable {
 		return max;
 	}
 
-	public void train(double[][] data, String[] labels) {
+	public void train(double[][] data, String[] labels) throws FileNotFoundException, UnsupportedEncodingException {
 		//Musts: data.length == labels.length. All data[i] == dimension. All labels must appear at least once.
 		//labels means classes
 		
@@ -55,27 +58,28 @@ public class LinearRegressionClassifier implements Serializable {
 					double tempB = 0;
 					
 					for(int l = 0; l < data.length; l++) {
-						if(j == k)
-							tempA += data[l][j];
-						else
-							tempA += data[l][j] * data[l][k];
 						
-						if(k == 0) //Only need to calculate labels once per row
+						tempA += data[l][j] * data[l][k];
+						
+						if(k == 0 && labels[l].equals(classes[i])) //Only need to calculate labels once per row
 							tempB += data[l][j];
 					}
 					
 					tempA  *= 2;
 					A.set(j, k, tempA);
-					System.out.println("Class: " + i + ". Position: " + j + ", " + k + ". Value: " + tempA);
 					
 					if(k == 0) { //Again, only calculate labels once per row (one constant per equation)
 						tempB *= 2;
 						B.set(j, 0, tempB);
 					}
 				}
+				System.out.println("Class: " + i + ". Position: " + j);
 			}
 			
 			//System.out.println(Arrays.deepToString(A.getArray()));
+			PrintWriter writer = new PrintWriter("class"+i+".txt", "UTF-8");
+			writer.println(Arrays.deepToString(A.getArray()));
+			writer.close();
 			
 			Matrix x = A.solve(B);
 			theta.setMatrix(0, dimension - 1, i, i, x);
