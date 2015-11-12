@@ -52,37 +52,34 @@ public class LinearClassifier implements Serializable {
 
 		// We create a matrix of coefficients for each of our classes.
 		for (int cl = 0; cl < classes.length; cl++) {
-			int sum = 0; // used for both summing coefficients and summing
-							// constants
+			int sumT = 0; // used for  summing coefficients 
+			int sumC =0; //used for summing constants
 
 			// Compute the coefficients in each index, 
 			// Add reasoning later
 
 			for(int r =0;r<dimension;r++)
 			{
+				sumC =0;
 				for(int c=0; c<dimension; c++)
 				{
-					sum =0;
+					sumT =0;
 					for(int d=0;d<data.length;d++)
 					{
-						sum =+ data[d][c]*data[d][r];
+						//Every column, within a row represents the coefficient of a single unknown. Since Differentiate this: sum((t_1x_1 +t_2x_2+...)^2) becomes
+						// sum(2*x_i(t_1x_1 +t_2_x2)) where x_i is the coefficcient of the variable we differentiate (this is the row).  
+						sumT =+ 2*data[d][c]*data[d][r];
+						//RHS of the linear solution we are building. If the lavel of the current vector matches, then it has a 100% probability
+						// of being this current class. Since we derived the function, every "1" will be multiplied by 2 (least square method) and the coefficient
+						// of the variable being differentiated
+						if (labels[d].equals(classes[cl]))
+							sumC += 2*data[d][r];}
 					}
-					solution[c][r]=sum;
+					solution[c][r]=sumT;
 				}
+				solveM[r][0] = sumC;
 			}
 			
-
-			// Compute constants
-			for (int r = 0; r < dimension; r++) {
-				sum = 0;
-				for(int c =0; c<dimension; c++){
-					if (labels[c].equals(classes[cl]))
-						sum += data[r][c];
-					}
-				// Fill up the RHS matrix
-				solveM[r][0] = sum;
-			}
-
 			// Super ugly way to create a matrix for both the RHS and LHS, solve
 			// it, then extra the resulting nx1 matrix and put it in the
 			// solution
