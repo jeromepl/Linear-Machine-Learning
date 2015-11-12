@@ -55,32 +55,30 @@ public class LinearClassifier implements Serializable {
 			int sum = 0; // used for both summing coefficients and summing
 							// constants
 
-			// Compute the coefficients in each index, going by column.
+			// Compute the coefficients in each index, 
 			// Add reasoning later
-			// column
-			for (int a = 0; a < dimension; a++) {
-				// rows
-				for (int i = 0; i < dimension; i++) {
-					sum = 0;
-					// bytes
-					for (int j = 0; j < dimension; j++) {
-						// Diagonal of the matrix, square of the entry
-						if (i == a)
-							sum += 2 * (data[j][a] * data[j][a]);
-						else
-							sum += data[j][a];
+
+			for(int r =0;r<dimension;r++)
+			{
+				for(int c=0; c<dimension; c++)
+				{
+					sum =0;
+					for(int d=0;d<data.length;d++)
+					{
+						sum =+ data[d][c]*data[d][r];
 					}
-					tempMatrix[a][i] = sum;
+					solution[c][r]=sum;
 				}
 			}
+			
 
 			// Compute constants
 			for (int r = 0; r < dimension; r++) {
 				sum = 0;
-				for (double x : data[r]) {
-					if (labels[r].equals(classes[cl]))
-						sum += x;
-				}
+				for(int c =0; c<dimension; c++){
+					if (labels[c].equals(classes[cl]))
+						sum += data[r][c];
+					}
 				// Fill up the RHS matrix
 				solveM[r][0] = sum;
 			}
