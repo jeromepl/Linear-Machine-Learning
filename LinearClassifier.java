@@ -1,4 +1,5 @@
 package linearML;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ public class LinearClassifier implements Serializable {
 		theta = new Matrix(dimension, classes.length); //Create an empty matrix
 	}
 	
-	public String classify(int[] data) {
+	public String classify(double[] data) {
 		Map<String, Float> distribution = classDistribution(data);
 		
 		float maxValue = -1;
@@ -37,15 +38,24 @@ public class LinearClassifier implements Serializable {
 		return max;
 	}
 	
-	public void train(int[][] data) {
+	public void train(double[][] data) {
 		Matrix matrixToSolve = new Matrix(dimension, dimension);
 	}
 	
-	public Map<String, Float> classDistribution(int[] data) {
+	public Map<String, Float> classDistribution(double[] data) {
 		Map<String, Float> distribution = new HashMap<String, Float>();
-		
-		
-		
+
+		Matrix dataM = new Matrix(new double[][]{data});
+		//Multiply the 1xn data matrix by the nxm theta matrix to result in our result of 1x10 propabilities matrix
+		Matrix distributionM = dataM.arrayTimes(theta);
+		//Transform back to matrix
+		double[] result = distributionM.getArray()[0];
+		//fill the hasmap with the keys and propabilities
+		for(int i=0;i<classes.length; i++)
+		{
+			distribution.put(classes[i], result[i]);
+		}
+
 		return distribution;
 	}
 	
