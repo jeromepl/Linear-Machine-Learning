@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class TestClassifier {
@@ -13,8 +14,13 @@ public class TestClassifier {
 		
 		long startTime = System.currentTimeMillis();
 		
-		double[][] trainImages = getImages(new File("train-images.idx3-ubyte"));
-		String[] trainLabels = getLabels(new File("train-labels.idx1-ubyte"));
+		/*double[][] trainImages = getImages(new File("train-images.idx3-ubyte"));
+		String[] trainLabels = getLabels(new File("train-labels.idx1-ubyte"));*/
+		
+		ObjectInputStream in = new ObjectInputStream(new FileInputStream("training.obj")); //The training data has been outputted to a file as an object to save loading time
+		double[][] trainImages = (double[][]) in.readObject();
+		String[] trainLabels = (String[]) in.readObject();
+		in.close();
 		
 		System.out.println("Loaded training data " + ((System.currentTimeMillis()-startTime)/1000d));
 		
@@ -25,15 +31,15 @@ public class TestClassifier {
 		
 		//We now have a training dataset
 		
-		LinearRegressionClassifier classifier = new LinearRegressionClassifier(testImages[0].length, new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"});
-		classifier.train(trainImages, trainLabels);
+		LinearRegressionClassifier classifier = new LinearRegressionClassifier(trainImages[0].length, new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"});
+		classifier.trainUsingGradientDescent(trainImages, trainLabels);
 		
 		//Save trained classifier in file
 		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(new File("classifier.obj")));
 		out.writeObject(classifier);
 		out.close();
 		
-		System.out.println("Trained KNN Classifier " + ((System.currentTimeMillis()-startTime)/1000d));
+		System.out.println("Trained Classifier " + ((System.currentTimeMillis()-startTime)/1000d));
 		
 		int good = 0, bad = 0;
 		for(int i = 0; i < testImages.length; i++) {
@@ -58,11 +64,11 @@ public class TestClassifier {
 		int row = input.readInt();
 		int col = input.readInt();
 		
-		images = new double[n][row*col];
+		images = new double[n][row *col];
 		
 		for(int i = 0; i < n; i++) {
-			for(int j = 0; j < row*col; j++) {
-				images[i][j] = (255 - input.readUnsignedByte())/255d; //INVERTED the pixel in order to prevent singular matrices to occur
+			for(int j = 0; j < row * col; j++) {
+				images[i][j] = input.readUnsignedByte() / 255d;
 			}
 		}
 		

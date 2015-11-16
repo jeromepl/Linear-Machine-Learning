@@ -13,6 +13,9 @@ import Jama.Matrix;
 public class LinearRegressionClassifier implements Serializable {
 
 	private static final long serialVersionUID = 7197882259463196104L;
+	
+	private static int NUM_PASSES = 10;
+	private static double LEARNING_RATE = 20;
 
 	private int dimension;
 	private String[] classes;
@@ -85,6 +88,54 @@ public class LinearRegressionClassifier implements Serializable {
 			theta.setMatrix(0, dimension - 1, i, i, x);
 		}
 		
+	}
+	
+	public void trainUsingGradientDescent(double[][] data, String[] labels) { //Stochastic Gradient descent
+		
+		//Initialize the theta Matrix to some random values
+		for(int i = 0; i < dimension; i++) {
+			for(int j = 0; j < classes.length; j++) {
+				theta.set(i, j, 0.5);
+			}
+		}
+		
+		double cost = 0;
+		
+		for(int i = 0; i < NUM_PASSES; i++) { //Do it n times to make sure it converged
+			for(int j = 0; j < data.length; j++) { //For all training values
+				for(int k = 0; k < dimension; k++) { //A gradient per theta
+					
+					Map<String, Double> distribution = classDistribution(data[j]);
+					
+					for(int l= 0; l < classes.length; l++) { //Different set of thetas for every class
+						
+						double current = theta.get(k, l);
+						double gradient = 0, tempCost = 0;
+						
+						double h = distribution.get(classes[l]);
+						gradient = data[j][k] * h;
+						tempCost = h;
+						
+						if(labels[j].equals(classes[l])) {
+							gradient -= data[j][k];
+							tempCost -= 1;
+						}
+						
+						gradient /= data.length;
+						
+						theta.set(k, l, current - LEARNING_RATE * gradient);
+						//bias.set(0, l, currentBias - LEARNING_RATE * biasGradient);
+						
+						cost += Math.pow(tempCost, 2);
+					}
+				}
+				
+				if(j % 1000 == 0) {
+					System.out.println("Pass: " + (i + 1) + " of " + NUM_PASSES + ", Data no. " + (j+1) + ", Cost: " + cost / 1000);
+					cost = 0;
+				}
+			}
+		}
 	}
 
 	public Map<String, Double> classDistribution(double[] data) {
